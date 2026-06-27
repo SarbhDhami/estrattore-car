@@ -17,7 +17,8 @@ jobs:
           mkdir output_immagini
           assetutil -I Assets.car -o output_immagini/Assets.json
           
-          git clone https://github.com/itouchandplay/acextract.git
+          # Usiamo il repository originale e sempre accessibile
+          git clone https://github.com/jcampbell1/acextract.git
           cd acextract
           swift build -c release
           cd ..
