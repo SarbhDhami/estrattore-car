@@ -1,0 +1,33 @@
+name: Estrai Assets CAR
+on: workflow_dispatch
+
+jobs:
+  extract-assets:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      - name: Scarica il file Assets da Pixeldrain
+        run: |
+          curl -L "https://pixeldrain.com/api/file/yGUJ7XXh" -o Assets.car
+
+      - name: Estrazione nativa con tool Apple
+        run: |
+          mkdir output_immagini
+          assetutil -I Assets.car -o output_immagini/Assets.json
+          
+          git clone https://github.com/itouchandplay/acextract.git
+          cd acextract
+          swift build -c release
+          cd ..
+          ./acextract/.build/release/acextract -i Assets.car -o output_immagini
+
+      - name: Comprime e prepara il Download
+        run: zip -r assetti_estratti.zip output_immagini
+
+      - name: Carica il file finale
+        uses: actions/upload-artifact@v4
+        with:
+          name: pacchetto-assetti
+          path: assetti_estratti.zip
