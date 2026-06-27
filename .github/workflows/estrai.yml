@@ -12,17 +12,20 @@ jobs:
         run: |
           curl -L "https://pixeldrain.com/api/file/yGUJ7XXh" -o Assets.car
 
-      - name: Estrazione nativa con tool Apple
+      - name: Compilazione ed Estrazione con Cartool
         run: |
           mkdir output_immagini
-          assetutil -I Assets.car -o output_immagini/Assets.json
           
-          # Usiamo il repository originale e sempre accessibile
-          git clone https://github.com/jcampbell1/acextract.git
-          cd acextract
-          swift build -c release
+          # Scarica il tool affidabile
+          git clone https://github.com/steventroughtonsmith/cartool.git
+          
+          # Compila il codice ignorando la firma digitale per evitare blocchi nel Cloud
+          cd cartool
+          xcodebuild -project cartool.xcodeproj -scheme cartool -configuration Release CONFIGURATION_BUILD_DIR=../build_output CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
           cd ..
-          ./acextract/.build/release/acextract -i Assets.car -o output_immagini
+          
+          # Lancia l'estrazione
+          ./build_output/cartool Assets.car output_immagini
 
       - name: Comprime e prepara il Download
         run: zip -r assetti_estratti.zip output_immagini
